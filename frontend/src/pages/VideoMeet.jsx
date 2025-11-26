@@ -17,8 +17,9 @@ import ChatIcon from "@mui/icons-material/Chat";
 import CloseIcon from "@mui/icons-material/Close";
 
 import "../styles/videoComponent.css";
+import servers from "../environment";
 
-const serverUrl = "http://localhost:3000";
+const serverUrl = servers;
 
 const peerConfig = {
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],

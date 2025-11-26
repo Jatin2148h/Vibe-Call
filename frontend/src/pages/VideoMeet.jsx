@@ -19,7 +19,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import "../styles/videoComponent.css";
 import servers from "../environment";
 
-const serverUrl = servers;
+const serverUrl = servers.websocket;
 
 const peerConfig = {
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],

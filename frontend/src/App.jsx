@@ -14,18 +14,14 @@ function AppWrapper() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const path = window.location.pathname;
 
     if (!token) {
-      // Guest user → force to landing
-      if (window.location.pathname !== "/") {
+      if (path !== "/" && !path.startsWith("/m")) {
         navigate("/");
       }
     } else {
-      // Logged-in user → force to home
-      if (
-        window.location.pathname === "/" ||
-        window.location.pathname === "/auth"
-      ) {
+      if (path === "/" || path === "/auth") {
         navigate("/home");
       }
     }
@@ -33,15 +29,10 @@ function AppWrapper() {
 
   return (
     <Routes>
-      {/* Public Routes */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/auth" element={<Authentication />} />
-
-      {/* Protected Routes */}
       <Route path="/home" element={<HomeComponent />} />
       <Route path="/history" element={<History />} />
-
-      {/* Dynamic Meeting URL */}
       <Route path="/:url" element={<VideoMeetComponent />} />
     </Routes>
   );

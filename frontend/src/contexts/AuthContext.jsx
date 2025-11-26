@@ -3,15 +3,21 @@ import httpStatus from "http-status";
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import servers from "../environment";
+
 export const AuthContext = createContext({});
 
 const client = axios.create({
-  baseURL: `${servers}/api/users`,
+  baseURL: `${servers.backend}/api/users`,
 });
 
 export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
+
+  // 🔥 Check login
+  const isLoggedIn = () => {
+    return localStorage.getItem("token") !== null;
+  };
 
   // REGISTER
   const handleRegister = async (name, username, password) => {
@@ -36,66 +42,54 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ADD HISTORY — guest blocked
+  // ADD HISTORY — only logged-in
   const addToUserHistory = async (meetingCode) => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      console.log("Guest user — history not saved");
-      return;
-    }
+    if (!isLoggedIn()) return;
 
     try {
-      const request = await client.post(
+      await client.post(
         "/add_to_activity",
         { meeting_code: meetingCode },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
-
-      return request;
-    } catch (e) {
-      console.warn("History save failed:", e.message);
+    } catch {
       return { error: true };
     }
   };
 
   // GET HISTORY
   const getHistoryOfUser = async () => {
-    const token = localStorage.getItem("token");
-
-    if (!token) return [];
+    if (!isLoggedIn()) return [];
 
     try {
       const request = await client.get("/get_all_activity", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
       return request.data;
-    } catch (err) {
-      console.log("History fetch failed:", err);
+    } catch {
       return [];
     }
   };
 
   // DELETE HISTORY
   const deleteHistoryItem = async (id) => {
-    const token = localStorage.getItem("token");
-
-    if (!token) return { success: false };
+    if (!isLoggedIn()) return { success: false };
 
     try {
       await client.delete(`/delete_activity/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
-
       return { success: true };
-    } catch (err) {
+    } catch {
       return { success: false };
     }
   };
@@ -105,6 +99,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         userData,
         setUserData,
+        isLoggedIn,
         addToUserHistory,
         getHistoryOfUser,
         deleteHistoryItem,
@@ -116,4 +111,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
- 

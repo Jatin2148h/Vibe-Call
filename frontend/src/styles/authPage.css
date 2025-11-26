@@ -1,0 +1,118 @@
+/* FULL PAGE BACKGROUND IMAGE */
+.authContainer {
+  height: 100vh;
+  width: 100vw;
+  background-image: url("/loginPage.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+
+  animation: fadeBg 1.2s ease-in-out;
+}
+
+/* Background fade animation */
+@keyframes fadeBg {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* GLASS CARD */
+.glassCard {
+  width: 380px;
+  padding: 35px;
+  border-radius: 20px;
+  backdrop-filter: blur(18px);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.3);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ICON */
+.authIcon {
+  background: rgba(255, 255, 255, 0.35) !important;
+  margin-bottom: 10px;
+}
+
+/* TOGGLE BUTTONS */
+.toggleButtons {
+  display: flex;
+  gap: 20px;
+  margin: 10px 0 20px 0;
+}
+
+.toggleButtons button {
+  padding: 8px 18px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid #fff;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.toggleButtons .activeBtn {
+  background: white;
+  color: #2b026a;
+  font-weight: bold;
+}
+
+/* FORM AREA */
+.formBox {
+  width: 100%;
+}
+
+/* ERROR MESSAGE */
+.errorText {
+  color: #ff4f4f;
+  font-size: 14px;
+}
+
+/* SUBMIT BUTTON */
+.submitBtn {
+  margin-top: 20px !important;
+  padding: 12px !important;
+  background: white !important;
+  color: #2b026a !important;
+  border-radius: 8px !important;
+  font-weight: bold !important;
+  transition: 0.3s;
+}
+
+.submitBtn:hover {
+  transform: scale(1.04);
+}
+
+/* CARD FADE ANIMATION */
+.fadeIn {
+  animation: fadeUp 0.8s ease-out;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 600px) {
+  .glassCard {
+    width: 90%;
+    padding: 25px;
+  }
+
+  .toggleButtons {
+    gap: 10px;
+  }
+
+  .submitBtn {
+    padding: 10px !important;
+  }
+}

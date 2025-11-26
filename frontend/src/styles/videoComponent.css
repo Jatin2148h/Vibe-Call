@@ -1,0 +1,360 @@
+/* ======================================================
+   MAIN WRAPPER
+====================================================== */
+.meetWrapper {
+    width: 100%;
+    height: 100vh;
+    background: #0a0018;
+    color: white;
+    overflow: hidden;
+}
+
+/* ======================================================
+   JOIN SCREEN (PREMIUM UI)
+====================================================== */
+.joinBox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+    background: radial-gradient(circle at top, #250045, #0d0018);
+}
+
+.joinCard {
+    background: rgba(255, 255, 255, 0.07);
+    padding: 35px;
+    border-radius: 22px;
+    text-align: center;
+    width: 330px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 25px rgba(255,255,255,0.15);
+    animation: fadeIn 0.7s ease;
+}
+
+.joinTitle {
+    font-size: 26px;
+    margin-bottom: 18px;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.joinInput {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 16px;
+    margin-bottom: 18px;
+}
+
+.joinInput::placeholder {
+    color: #c3b5ff;
+}
+
+.connectButton {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #ff9839, #ff5c00);
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.connectButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 18px rgba(255,153,57,0.8);
+}
+
+.localPreview {
+    width: 100%;
+    height: 170px;
+    margin-top: 15px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ======================================================
+   VIDEO LAYOUT
+====================================================== */
+.videoLayout {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ======================================================
+   REMOTE USERS GRID
+====================================================== */
+.otherVideoArea {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    align-items: flex-start;
+
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.otherVideoBox h4 {
+    display: none !important;
+}
+
+.otherVideoBox {
+    background: rgba(255,255,255,0.06);
+    padding: 12px;
+    border-radius: 14px;
+    backdrop-filter: blur(10px);
+}
+
+.otherVideoBox video {
+    width: 260px;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 12px;
+    background: black;
+}
+
+/* ======================================================
+   LOCAL VIDEO FLOATING (RIGHT CORNER)
+====================================================== */
+.myVideoFloating {
+    position: absolute;
+    bottom: 95px;
+    right: 20px;
+    background: rgba(0,0,0,0.55);
+    padding: 6px;
+    border-radius: 14px;
+    backdrop-filter: blur(5px);
+    z-index: 50;
+}
+
+.myFloatingVideo {
+    width: 220px;
+    height: 150px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+/* ======================================================
+   CONTROL BAR
+====================================================== */
+.controlBar {
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: flex;
+    gap: 22px;
+
+    padding: 12px 25px;
+    background: #1b1b1b;
+    border-radius: 50px;
+    box-shadow: 0 0 15px #00000099;
+    z-index: 100;
+}
+
+.controlBtn {
+    width: 48px;
+    height: 48px;
+    background: #2b2b2b;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 22px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+.controlBtn:hover {
+    background: #3b3b3b;
+    transform: scale(1.12);
+}
+
+.endCallBtn {
+    width: 55px;
+    height: 55px;
+    background: #ff2e2e;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    font-size: 24px;
+    box-shadow: 0 0 15px #ff000080;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.endCallBtn:hover {
+    background: #ff1c1c;
+    transform: scale(1.15);
+}
+
+/* ======================================================
+   CHAT PANEL
+====================================================== */
+.chatPanel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 330px;
+    height: 100%;
+    background: #181a20;
+    border-left: 2px solid #292c35;
+    padding: 15px;
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: 200;
+}
+
+.chatHeader {
+    font-size: 20px;
+    font-weight: bold;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #2b2d36;
+    position: relative;
+}
+
+.chatCloseBtn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+
+    width: 32px;
+    height: 32px;
+
+    background: #2f3241;
+    color: white;
+    border: none;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.chatMessages {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 12px;
+}
+
+.chatMsg {
+    padding: 10px;
+    background: #232533;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.chatMsgSender {
+    color: #4dd0ff;
+    font-size: 14px;
+}
+
+.chatInputBox {
+    display: flex;
+    gap: 10px;
+}
+
+.chatInput {
+    flex: 1;
+    background: #212331;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    color: white;
+}
+
+.chatSendBtn {
+    padding: 10px 16px;
+    background: #21d4fd;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    color: #000;
+}
+
+/* New message badge */
+.chatBadge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: red;
+    color: white;
+    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 50%;
+}
+
+/* ======================================================
+   RESPONSIVE UI
+====================================================== */
+@media (max-width: 900px) {
+    .myFloatingVideo {
+        width: 170px;
+        height: 115px;
+    }
+}
+
+@media (max-width: 700px) {
+    .otherVideoBox video {
+        width: 180px;
+        height: 120px;
+    }
+
+    .myFloatingVideo {
+        width: 150px;
+        height: 100px;
+    }
+
+    .controlBar {
+        gap: 14px;
+        padding: 10px 18px;
+    }
+
+    .controlBtn {
+        width: 42px;
+        height: 42px;
+    }
+}
+
+@media (max-width: 500px) {
+    .otherVideoBox video {
+        width: 140px;
+        height: 100px;
+    }
+
+    .myFloatingVideo {
+        width: 130px;
+        height: 90px;
+    }
+}

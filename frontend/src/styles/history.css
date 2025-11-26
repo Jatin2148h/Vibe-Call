@@ -1,0 +1,116 @@
+/* MAIN CONTAINER */
+.historyContainer {
+  min-height: 100vh;
+  width: 100%;
+  padding: 30px;
+  background: radial-gradient(circle at top, #2d0066, #0a001e);
+  color: white;
+  animation: fadeIn 0.8s ease;
+}
+
+/* PAGE HEADER */
+.historyHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+.historyTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 0 18px rgba(255,255,255,0.25);
+}
+
+/* HOME BUTTON */
+.homeBtn {
+  color: white !important;
+  padding: 10px !important;
+  border-radius: 50% !important;
+  background: rgba(255,255,255,0.09);
+  backdrop-filter: blur(6px);
+  transition: 0.3s;
+}
+
+.homeBtn:hover {
+  transform: scale(1.14);
+  background: rgba(255,255,255,0.2);
+}
+
+/* HISTORY LIST */
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* CARD STYLE */
+.historyCard {
+  background: rgba(255,255,255,0.08) !important;
+  border-radius: 16px !important;
+  padding: 5px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  transition: 0.3s;
+}
+
+.historyCard:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(255,255,255,0.18);
+}
+
+/* TEXT */
+.historyCode {
+  font-size: 16px !important;
+  margin-bottom: 10px;
+  color: #ffe7c2 !important;
+}
+
+.historyDate {
+  font-size: 14px !important;
+  margin-bottom: 15px;
+  color: #c9c9ff !important;
+}
+
+/* DELETE BUTTON */
+.deleteBtn {
+  padding: 6px 14px !important;
+  border-radius: 10px !important;
+  font-weight: bold !important;
+  transition: 0.3s !important;
+}
+
+.deleteBtn:hover {
+  transform: scale(1.09);
+  box-shadow: 0 0 15px rgba(255,0,0,0.6);
+}
+
+/* NO HISTORY STYLE */
+.noHistory {
+  text-align: center;
+  margin-top: 60px !important;
+  font-size: 20px !important;
+  opacity: 0.8;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .historyTitle {
+    font-size: 22px;
+  }
+
+  .historyContainer {
+    padding: 18px;
+  }
+
+  .historyCard {
+    padding: 10px;
+  }
+}

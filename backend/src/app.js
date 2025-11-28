@@ -19,13 +19,13 @@ connectToSocket(server);
 app.set("port", process.env.PORT || 3000);
 
 // =========================
-// FIXED CORS FOR RENDER
+// CORS MIDDLEWARE (MUST BE FIRST)
 // =========================
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://vibecallfrontend.onrender.com",
+      "https://vibecallfrontend.onrender.com"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -33,8 +33,7 @@ app.use(
   })
 );
 
-// ⭐⭐ DO NOT USE app.options("*") — Node v22 ERROR ⭐⭐
-// ⭐⭐ Instead use this universal OPTIONS handler ⭐⭐
+// ⭐ UNIVERSAL OPTIONS HANDLER (REQUIRED)
 app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
     res.header("Access-Control-Allow-Origin", "*");
@@ -57,13 +56,13 @@ app.use(express.urlencoded({ extended: true, limit: "40kb" }));
 app.use("/api/users", userRoute);
 
 // =========================
-// MONGODB
+// DATABASE
 // =========================
 const MONGO_URL =
   "mongodb+srv://agrawaljatin157_db_user:dSHC2dtd2KlYOk4L@zoomclone.y6muepb.mongodb.net/vibecall?retryWrites=true&w=majority";
 
 // =========================
-// CONNECT + START SERVER
+// CONNECT + START
 // =========================
 const start = async () => {
   try {

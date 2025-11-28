@@ -35,9 +35,10 @@ export default function LandingPage() {
                         Cover a distance by Apna Video Call
                     </p>
 
-                    <div className="ctaBtn" role="button">
-                        <Link to="/auth">Get Started</Link>
+                    <div className="ctaBtn" role="button" onClick={() => router("/auth")}>
+                        Get Started
                     </div>
+
                 </div>
 
                 <div className="heroRight slideRight">

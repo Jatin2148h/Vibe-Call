@@ -27,11 +27,15 @@ app.use(
       "http://localhost:5173",
       "https://vibecallfrontend.onrender.com"
     ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+// ⭐ FIX for preflight
+app.options("*", cors());
+
 
 // ⭐ UNIVERSAL OPTIONS HANDLER (REQUIRED)
 app.use((req, res, next) => {

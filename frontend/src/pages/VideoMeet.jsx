@@ -17,9 +17,10 @@ import ChatIcon from "@mui/icons-material/Chat";
 import CloseIcon from "@mui/icons-material/Close";
 
 import "../styles/videoComponent.css";
-import servers from "../environment";
 
-const serverUrl = servers.websocket;
+
+const serverUrl = "http://localhost:3000";   // LOCAL SOCKET
+
 
 const peerConfig = {
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],

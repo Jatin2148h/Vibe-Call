@@ -2,24 +2,21 @@ import axios from "axios";
 import httpStatus from "http-status";
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import servers from "../environment";
 
 export const AuthContext = createContext({});
 
 const client = axios.create({
-  baseURL: `${servers.backend}/api/users`,
+  baseURL: "http://localhost:3000/api/users",   // LOCAL API
 });
 
 export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
 
-  // 🔥 Check login
   const isLoggedIn = () => {
     return localStorage.getItem("token") !== null;
   };
 
-  // REGISTER
   const handleRegister = async (name, username, password) => {
     const request = await client.post("/register", {
       name,
@@ -32,7 +29,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // LOGIN
   const handleLogin = async (username, password) => {
     const request = await client.post("/login", { username, password });
 
@@ -42,7 +38,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ADD HISTORY — only logged-in
   const addToUserHistory = async (meetingCode) => {
     if (!isLoggedIn()) return;
 
@@ -61,7 +56,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // GET HISTORY
   const getHistoryOfUser = async () => {
     if (!isLoggedIn()) return [];
 
@@ -78,7 +72,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // DELETE HISTORY
   const deleteHistoryItem = async (id) => {
     if (!isLoggedIn()) return { success: false };
 

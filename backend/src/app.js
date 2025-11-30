@@ -14,12 +14,12 @@ connectToSocket(server);
 // PORT
 app.set("port", process.env.PORT || 3000);
 
-// ⭐ FIXED CORS — NO STAR (*), NO OPTIONS ROUTES
+// ⭐ FIXED CORS — PRODUCTION SAFE
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://vibecallfrontend.onrender.com"
+      "https://vibecallfrontend.onrender.com",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -35,7 +35,8 @@ app.use(express.urlencoded({ extended: true, limit: "40kb" }));
 app.use("/api/users", userRoute);
 
 // MONGO URL
-const MONGO_URL = "mongodb+srv://agrawaljatin157_db_user:dSHC2dtd2KlYOk4L@zoomclone.y6muepb.mongodb.net/vibecall?retryWrites=true&w=majority";
+const MONGO_URL =
+  "mongodb+srv://agrawaljatin157_db_user:dSHC2dtd2KlYOk4L@zoomclone.y6muepb.mongodb.net/vibecall?retryWrites=true&w=majority";
 
 // CONNECT + START
 const start = async () => {

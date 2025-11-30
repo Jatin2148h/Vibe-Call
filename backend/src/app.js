@@ -11,8 +11,8 @@ const server = createServer(app);
 // SOCKET INIT
 connectToSocket(server);
 
-// PORT
-app.set("port", process.env.PORT || 3000);
+// ⭐ FIXED PORT — Render Compatible
+const PORT = process.env.PORT || 3000;
 
 // ⭐ FIXED CORS — PRODUCTION SAFE
 app.use(
@@ -44,8 +44,8 @@ const start = async () => {
     const conn = await mongoose.connect(MONGO_URL);
     console.log(`MongoDB connected: ${conn.connection.host}`);
 
-    server.listen(app.get("port"), () => {
-      console.log("Server running at PORT:", app.get("port"));
+    server.listen(PORT, () => {
+      console.log("Server running at PORT:", PORT);
     });
   } catch (err) {
     console.log("Database connection failed:", err.message);

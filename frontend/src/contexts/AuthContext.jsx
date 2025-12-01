@@ -7,60 +7,57 @@ import servers from "../environment";
 export const AuthContext = createContext({});
 
 const client = axios.create({
-  baseURL: servers.backend, // ⭐ FIXED (no extra /api/users here)
+  baseURL: servers.backend,   // ⭐ VERY IMPORTANT FIX
 });
 
 export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
 
+  // CHECK LOGIN
   const isLoggedIn = () => {
     return localStorage.getItem("token") !== null;
   };
 
-  // ⭐ REGISTER (fixed return + error)
+  // ⭐ REGISTER — FULLY FIXED
   const handleRegister = async (name, username, password) => {
     try {
-      const request = await client.post("/api/users/register", {
+      const res = await client.post("/api/users/register", {
         name,
         username,
         password,
       });
 
-      if (request.status === httpStatus.Created) {
-        return request.data.message;  // ⭐ message returns to Snackbar
-      } else {
-        throw new Error("Unexpected register response");
+      if (res.status === httpStatus.Created) {
+        return res.data.message; // Snackbar message
       }
 
     } catch (err) {
-      throw err; // ⭐ frontend catches error
+      throw err.response?.data || { message: "Registration failed" };
     }
   };
 
-  // ⭐ LOGIN (fixed URL + return + errors)
+  // ⭐ LOGIN — FULLY FIXED
   const handleLogin = async (username, password) => {
     try {
-      const request = await client.post("/api/users/login", {
+      const res = await client.post("/api/users/login", {
         username,
         password,
       });
 
-      if (request.status === httpStatus.Ok) {
-        localStorage.setItem("token", request.data.token);
+      if (res.status === httpStatus.Ok) {
+        localStorage.setItem("token", res.data.token);
 
-        return { success: true }; // ⭐ prevent silent login
-      } else {
-        throw new Error("Login failed");
+        navigate("/home");
+        return { success: true };
       }
 
     } catch (err) {
-      throw err; // ⭐ frontend error visible
+      throw err.response?.data || { message: "Login failed" };
     }
   };
 
-  // NO CHANGES BELOW (kept original as requested)
-
+  // ⭐ ADD TO HISTORY
   const addToUserHistory = async (meetingCode) => {
     if (!isLoggedIn()) return;
 
@@ -79,22 +76,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // ⭐ GET USER HISTORY
   const getHistoryOfUser = async () => {
     if (!isLoggedIn()) return [];
 
     try {
-      const request = await client.get("/api/users/get_all_activity", {
+      const res = await client.get("/api/users/get_all_activity", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      return request.data;
+      return res.data;
+
     } catch {
       return [];
     }
   };
 
+  // ⭐ DELETE HISTORY ITEM
   const deleteHistoryItem = async (id) => {
     if (!isLoggedIn()) return { success: false };
 
@@ -111,17 +111,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // ⭐ CONTEXT RETURN
   return (
     <AuthContext.Provider
       value={{
         userData,
         setUserData,
         isLoggedIn,
+        handleLogin,
+        handleRegister,
         addToUserHistory,
         getHistoryOfUser,
         deleteHistoryItem,
-        handleRegister,
-        handleLogin,
       }}
     >
       {children}

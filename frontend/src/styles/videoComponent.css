@@ -135,12 +135,12 @@
 }
 
 /* ======================================================
-   LOCAL VIDEO FLOATING (RIGHT CORNER)
+   LOCAL VIDEO FLOATING (LEFT CORNER)
 ====================================================== */
 .myVideoFloating {
     position: absolute;
     bottom: 95px;
-    right: 20px;
+    left: 20px;   /* 👈 RIGHT ko LEFT kar diya */
     background: rgba(0,0,0,0.55);
     padding: 6px;
     border-radius: 14px;

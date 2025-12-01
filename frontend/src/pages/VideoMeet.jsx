@@ -1,10 +1,10 @@
 // ---------------------------------------------
-// 🔥 VIDEO MEET FRONTEND — FINAL FIXED VERSION
+// 🔥 FINAL — VIDEO MEET FRONTEND (100% WORKING)
 // ---------------------------------------------
 
 import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
@@ -19,15 +19,18 @@ import CloseIcon from "@mui/icons-material/Close";
 import "../styles/videoComponent.css";
 
 
-const serverUrl = "http://localhost:3000";   // LOCAL SOCKET
+// 🔥 YOUR REAL BACKEND SOCKET SERVER (RENDER)
+const serverUrl = "https://vibe-callbackend-pbks.onrender.com";
 
-
+// STUN SERVER
 const peerConfig = {
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
 };
 
 export default function VideoMeetComponent() {
-    const { url } = useParams(); // ⭐ REAL ROOM CODE
+
+    const { url } = useParams();
+    const navigate = useNavigate();
 
     const socketRef = useRef();
     const socketIdRef = useRef();
@@ -44,13 +47,12 @@ export default function VideoMeetComponent() {
     const [micOn, setMicOn] = useState(true);
     const [cameraOn, setCameraOn] = useState(true);
 
-    // CHAT STATE
     const [chatOpen, setChatOpen] = useState(false);
     const [chatMessages, setChatMessages] = useState([]);
     const [chatInput, setChatInput] = useState("");
     const [newMsgCount, setNewMsgCount] = useState(0);
 
-    // Reset chat on load
+    // RESET CHAT
     useEffect(() => {
         setChatMessages([]);
         setNewMsgCount(0);
@@ -67,32 +69,36 @@ export default function VideoMeetComponent() {
 
                 window.localStream = stream;
                 localVideoRef.current.srcObject = stream;
+
             } catch (error) {
-                console.log(error);
+                console.log("CAM ERROR:", error);
             }
         }
         startCam();
     }, []);
 
-    // KEEP LOCAL VIDEO SYNC
+    // KEEP LOCAL VIDEO UPDATED
     useEffect(() => {
         if (localVideoRef.current && window.localStream) {
             localVideoRef.current.srcObject = window.localStream;
         }
     }, [joined]);
 
+
     // JOIN CALL
     const joinCall = () => {
         if (username.trim() === "") {
-            alert("Enter your name first!");
+            alert("Enter your name!");
             return;
         }
 
-        // Reset chat on every join
-        setChatMessages([]);
-        setNewMsgCount(0);
-
         setJoined(true);
+
+        // RESET OLD CONNECTION
+        connections.current = {};
+        videoRef.current = [];
+        setVideos([]);
+        setChatMessages([]);
 
         socketRef.current = io(serverUrl, {
             transports: ["websocket"],
@@ -101,81 +107,72 @@ export default function VideoMeetComponent() {
 
         socketRef.current.on("connect", () => {
             socketIdRef.current = socketRef.current.id;
-
-            // ⭐ REAL DYNAMIC ROOM
             socketRef.current.emit("join-call", url, username);
         });
 
         socketRef.current.on("signal", handleSignal);
 
-        // ⭐ CHAT LISTENER (fixed)
         socketRef.current.on("chat-message", (msg, sender, senderId) => {
-            if (senderId === socketIdRef.current) return; // FIX double
+            if (senderId === socketIdRef.current) return;
 
             setChatMessages((prev) => [...prev, { sender, msg }]);
 
             if (!chatOpen) setNewMsgCount((n) => n + 1);
         });
 
-        // USER JOINED
         socketRef.current.on("user_joined", (newUserId, list) => {
-            const others = list.filter((id) => id !== socketIdRef.current);
+            const others = list.filter(id => id !== socketIdRef.current);
 
-            others.forEach((peerId) => {
+            others.forEach(peerId => {
                 if (!connections.current[peerId]) {
-                    const initiator = socketIdRef.current < peerId;
+                    const initiator =
+                        socketIdRef.current.localeCompare(peerId) === -1;
                     createPeer(peerId, initiator);
                 }
             });
         });
 
-        // USER LEFT
         socketRef.current.on("user-left", (id) => {
-            videoRef.current = videoRef.current.filter((v) => v.socketId !== id);
+            videoRef.current = videoRef.current.filter(v => v.socketId !== id);
             setVideos([...videoRef.current]);
             delete connections.current[id];
         });
     };
+
 
     // CREATE PEER
     const createPeer = (peerId, isInitiator) => {
         const pc = new RTCPeerConnection(peerConfig);
         connections.current[peerId] = pc;
 
-        // Add local video
-        window.localStream.getTracks().forEach((track) => {
-            pc.addTrack(track, window.localStream);
-        });
+        if (window.localStream) {
+            window.localStream.getTracks().forEach(track => {
+                pc.addTrack(track, window.localStream);
+            });
+        }
 
-        // REMOTE VIDEO STREAM
         pc.ontrack = (e) => {
-            const exists = videoRef.current.find((v) => v.socketId === peerId);
-
+            const exists = videoRef.current.find(v => v.socketId === peerId);
             if (!exists) {
                 const newVideo = {
                     socketId: peerId,
                     stream: e.streams[0],
                 };
-
                 videoRef.current.push(newVideo);
                 setVideos([...videoRef.current]);
             }
         };
 
-        // ICE
         pc.onicecandidate = (e) => {
             if (e.candidate) {
-                socketRef.current.emit(
-                    "signal",
-                    peerId,
+                socketRef.current.emit("signal", peerId,
                     JSON.stringify({ ice: e.candidate })
                 );
             }
         };
 
-        // Offer
         if (isInitiator) {
-            pc.createOffer().then((offer) => {
+            pc.createOffer().then(offer => {
                 pc.setLocalDescription(offer).then(() => {
                     socketRef.current.emit(
                         "signal",
@@ -189,7 +186,8 @@ export default function VideoMeetComponent() {
         return pc;
     };
 
-    // HANDLE SIGNAL MESSAGE
+
+    // HANDLE SIGNAL
     const handleSignal = (fromId, message) => {
         if (fromId === socketIdRef.current) return;
 
@@ -219,40 +217,36 @@ export default function VideoMeetComponent() {
         }
     };
 
+
     // SEND CHAT
     const sendChat = () => {
         if (!chatInput.trim()) return;
 
-        // Send through socket
         socketRef.current.emit("chat-message", chatInput, username);
 
-        // Add local message once only
-        setChatMessages((prev) => [
-            ...prev,
-            { sender: username, msg: chatInput },
-        ]);
+        setChatMessages(prev => [...prev, { sender: username, msg: chatInput }]);
 
         setChatInput("");
     };
 
-    // END CALL
+
+    // END CALL — FIXED REDIRECT
     const endCall = () => {
         try {
             localVideoRef.current.srcObject
                 .getTracks()
-                .forEach((track) => track.stop());
+                .forEach(t => t.stop());
         } catch { }
 
         const token = localStorage.getItem("token");
 
         if (!token) {
-            // Guest user
-            window.location.href = "/";
+            navigate("/");        // Guest → Landing page
         } else {
-            // Logged-in user
-            window.location.href = "/home";
+            navigate("/home");    // Logged user → Home page
         }
     };
+
 
     // MIC / CAMERA
     const toggleMic = () => {
@@ -266,6 +260,7 @@ export default function VideoMeetComponent() {
         t.enabled = !t.enabled;
         setCameraOn(t.enabled);
     };
+
 
     // SCREEN SHARE
     useEffect(() => {
@@ -284,16 +279,18 @@ export default function VideoMeetComponent() {
             for (let id in connections.current) {
                 const sender = connections.current[id]
                     .getSenders()
-                    .find((s) => s.track.kind === "video");
+                    .find(s => s.track.kind === "video");
 
                 sender.replaceTrack(screenStream.getVideoTracks()[0]);
             }
+
         } catch (err) {
-            console.log(err);
+            console.log("SCREEN ERROR:", err);
         }
     };
 
-    // UI START
+
+    // UI
     return (
         <div className="meetWrapper">
 
@@ -326,31 +323,20 @@ export default function VideoMeetComponent() {
                 </div>
             ) : (
                 <>
-                    {/* VIDEO LAYOUT */}
                     <div className="videoLayout">
 
-                        {/* REMOTE USERS */}
                         <div className="otherVideoArea">
                             {videos.map((v) => (
                                 <div className="otherVideoBox" key={v.socketId}>
-
-                                    {/* NAME REMOVED */}
-                                    {/* <h4>{v.socketId}</h4> */}
-
                                     <video
                                         autoPlay
                                         playsInline
-                                        ref={(ref) => {
-                                            if (ref && v.stream) {
-                                                ref.srcObject = v.stream;
-                                            }
-                                        }}
+                                        ref={(ref) => ref && (ref.srcObject = v.stream)}
                                     ></video>
                                 </div>
                             ))}
                         </div>
 
-                        {/* LOCAL VIDEO FLOATING ON RIGHT */}
                         <div className="myVideoFloating">
                             <video
                                 ref={localVideoRef}
@@ -360,15 +346,11 @@ export default function VideoMeetComponent() {
                             ></video>
                         </div>
 
-                        {/* CHAT PANEL SAME */}
                         {chatOpen && (
                             <div className="chatPanel">
                                 <div className="chatHeader">
                                     Chat
-                                    <button
-                                        className="chatCloseBtn"
-                                        onClick={() => setChatOpen(false)}
-                                    >
+                                    <button className="chatCloseBtn" onClick={() => setChatOpen(false)}>
                                         <CloseIcon />
                                     </button>
                                 </div>
@@ -396,7 +378,6 @@ export default function VideoMeetComponent() {
                             </div>
                         )}
 
-                        {/* CONTROL BAR SAME */}
                         <div className="controlBar">
                             <button className="controlBtn" onClick={toggleMic}>
                                 {micOn ? <MicIcon /> : <MicOffIcon />}
@@ -430,7 +411,6 @@ export default function VideoMeetComponent() {
                     </div>
                 </>
             )}
-
         </div>
     );
 }

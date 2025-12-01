@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
       password,
     });
 
-    if (request.status === httpStatus.CREATED) {
+    if (request.status === httpStatus.Created) {
       return request.data.message;
     }
   };
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
   const handleLogin = async (username, password) => {
     const request = await client.post("/login", { username, password });
 
-    if (request.status === httpStatus.OK) {
+    if (request.status === httpStatus.Ok) {
       localStorage.setItem("token", request.data.token);
       navigate("/home");
     }

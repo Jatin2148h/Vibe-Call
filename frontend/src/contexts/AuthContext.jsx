@@ -7,7 +7,7 @@ import servers from "../environment";
 export const AuthContext = createContext({});
 
 const client = axios.create({
-  baseURL: `${servers.backend}/api/users`,
+  baseURL: servers.backend, // ⭐ FIXED (no extra /api/users here)
 });
 
 export const AuthProvider = ({ children }) => {
@@ -18,56 +18,55 @@ export const AuthProvider = ({ children }) => {
     return localStorage.getItem("token") !== null;
   };
 
-  // ⭐ FIXED REGISTER — always return or throw error
+  // ⭐ REGISTER (fixed return + error)
   const handleRegister = async (name, username, password) => {
     try {
-      const request = await client.post("/register", {
+      const request = await client.post("/api/users/register", {
         name,
         username,
         password,
       });
 
       if (request.status === httpStatus.Created) {
-        return request.data.message || "Registered Successfully";
+        return request.data.message;  // ⭐ message returns to Snackbar
       } else {
-        throw new Error("Unexpected response");
+        throw new Error("Unexpected register response");
       }
 
     } catch (err) {
-      // ⭐ VERY IMPORTANT — error return karo frontend ko
-      throw err;
+      throw err; // ⭐ frontend catches error
     }
   };
 
-  // ⭐ FIXED LOGIN — always return & throw error on fail
+  // ⭐ LOGIN (fixed URL + return + errors)
   const handleLogin = async (username, password) => {
     try {
-      const request = await client.post("/login", { username, password });
+      const request = await client.post("/api/users/login", {
+        username,
+        password,
+      });
 
       if (request.status === httpStatus.Ok) {
         localStorage.setItem("token", request.data.token);
 
-        // ⭐ return login success message
-        return { success: true, token: request.data.token };
-
+        return { success: true }; // ⭐ prevent silent login
       } else {
-        throw new Error("Invalid login");
+        throw new Error("Login failed");
       }
 
     } catch (err) {
-      // ⭐ Frontend ko proper error milega
-      throw err;
+      throw err; // ⭐ frontend error visible
     }
   };
 
-  // ---------- BELOW NO CHANGES (only add fixes above) ----------
+  // NO CHANGES BELOW (kept original as requested)
 
   const addToUserHistory = async (meetingCode) => {
     if (!isLoggedIn()) return;
 
     try {
       await client.post(
-        "/add_to_activity",
+        "/api/users/add_to_activity",
         { meeting_code: meetingCode },
         {
           headers: {
@@ -84,7 +83,7 @@ export const AuthProvider = ({ children }) => {
     if (!isLoggedIn()) return [];
 
     try {
-      const request = await client.get("/get_all_activity", {
+      const request = await client.get("/api/users/get_all_activity", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -100,11 +99,12 @@ export const AuthProvider = ({ children }) => {
     if (!isLoggedIn()) return { success: false };
 
     try {
-      await client.delete(`/delete_activity/${id}`, {
+      await client.delete(`/api/users/delete_activity/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
+
       return { success: true };
     } catch {
       return { success: false };

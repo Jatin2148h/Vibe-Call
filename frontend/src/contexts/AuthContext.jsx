@@ -18,26 +18,49 @@ export const AuthProvider = ({ children }) => {
     return localStorage.getItem("token") !== null;
   };
 
+  // ⭐ FIXED REGISTER — always return or throw error
   const handleRegister = async (name, username, password) => {
-    const request = await client.post("/register", {
-      name,
-      username,
-      password,
-    });
+    try {
+      const request = await client.post("/register", {
+        name,
+        username,
+        password,
+      });
 
-    if (request.status === httpStatus.Created) {
-      return request.data.message;
+      if (request.status === httpStatus.Created) {
+        return request.data.message || "Registered Successfully";
+      } else {
+        throw new Error("Unexpected response");
+      }
+
+    } catch (err) {
+      // ⭐ VERY IMPORTANT — error return karo frontend ko
+      throw err;
     }
   };
 
+  // ⭐ FIXED LOGIN — always return & throw error on fail
   const handleLogin = async (username, password) => {
-    const request = await client.post("/login", { username, password });
+    try {
+      const request = await client.post("/login", { username, password });
 
-    if (request.status === httpStatus.Ok) {
-      localStorage.setItem("token", request.data.token);
-      navigate("/home");
+      if (request.status === httpStatus.Ok) {
+        localStorage.setItem("token", request.data.token);
+
+        // ⭐ return login success message
+        return { success: true, token: request.data.token };
+
+      } else {
+        throw new Error("Invalid login");
+      }
+
+    } catch (err) {
+      // ⭐ Frontend ko proper error milega
+      throw err;
     }
   };
+
+  // ---------- BELOW NO CHANGES (only add fixes above) ----------
 
   const addToUserHistory = async (meetingCode) => {
     if (!isLoggedIn()) return;

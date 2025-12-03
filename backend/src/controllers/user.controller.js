@@ -4,9 +4,13 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { Meeting } from "../models/meeting.model.js";
 
-// LOGIN
+// ✅ LOGIN — ONLY BUG FIXED
 const login = async (req, res) => {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
+
+    // 🔧 BUG FIX 1: extra space wala issue solve
+    username = username?.trim();
+    password = password?.trim();
 
     if (!username || !password)
         return res.status(400).json({ message: "Username and password required" });
@@ -27,13 +31,18 @@ const login = async (req, res) => {
 
         return res.status(200).json({ token });
     } catch (e) {
-        return res.json({ message: `Error: ${e}` });
+        // 🔧 BUG FIX 2: proper error status
+        return res.status(500).json({ message: "Server error during login" });
     }
 };
 
-// REGISTER
+// ✅ REGISTER — ONLY BUG FIXED
 const register = async (req, res) => {
-    const { name, username, password } = req.body;
+    let { name, username, password } = req.body;
+
+    // 🔧 space wala bug yahan bhi fix
+    username = username?.trim();
+    password = password?.trim();
 
     try {
         const exists = await User.findOne({ username });
@@ -53,11 +62,11 @@ const register = async (req, res) => {
 
         res.status(201).json({ message: "User registered successfully" });
     } catch (e) {
-        res.json({ message: `Error: ${e}` });
+        res.status(500).json({ message: "Server error during register" });
     }
 };
 
-// GET HISTORY
+// ✅ GET HISTORY (UNCHANGED)
 const getUserHistory = async (req, res) => {
     let headerToken = null;
 
@@ -84,7 +93,7 @@ const getUserHistory = async (req, res) => {
     }
 };
 
-// ADD HISTORY
+// ✅ ADD HISTORY (UNCHANGED)
 const addToHistory = async (req, res) => {
     let headerToken = null;
 
@@ -116,7 +125,7 @@ const addToHistory = async (req, res) => {
     }
 };
 
-// ⭐ DELETE HISTORY
+// ✅ DELETE HISTORY (UNCHANGED)
 const deleteHistoryItem = async (req, res) => {
     const meetingId = req.params.id;
 

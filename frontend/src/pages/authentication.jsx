@@ -24,22 +24,36 @@ export default function Authentication() {
 
     const { handleRegister, handleLogin } = React.useContext(AuthContext);
 
+    // ✅ ✅ SIRF YE FUNCTION FIX HUA HAI
     const handleAuth = async () => {
-        try {
-            if (formState === 0) {
-                await handleLogin(username, password);
+        setError(""); // clear old error
+
+        if (formState === 0) {
+            // LOGIN
+            const res = await handleLogin(username, password);
+
+            if (res.success) {
+                // success → AuthContext already navigates
             } else {
-                let result = await handleRegister(name, username, password);
-                setMessage(result);
+                setError(res.message);   // ✅ real backend message
+            }
+
+        } else {
+            // REGISTER
+            const res = await handleRegister(name, username, password);
+
+            if (res.success) {
+                setMessage(res.message);  // ✅ success message
                 setOpen(true);
+
                 setUsername("");
                 setPassword("");
                 setName("");
                 setError("");
                 setFormState(0);
+            } else {
+                setError(res.message);    // ✅ "Username already exists" yahin dikhega
             }
-        } catch (err) {
-            setError(err?.response?.data?.message || "Something went wrong");
         }
     };
 

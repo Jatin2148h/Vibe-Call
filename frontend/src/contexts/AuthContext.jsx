@@ -7,7 +7,7 @@ import servers from "../environment";
 export const AuthContext = createContext({});
 
 const client = axios.create({
-  baseURL: servers.backend,   // ⭐ VERY IMPORTANT FIX
+  baseURL: servers.backend,
 });
 
 export const AuthProvider = ({ children }) => {
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
     return localStorage.getItem("token") !== null;
   };
 
-  // ⭐ REGISTER — FULLY FIXED
+  // ✅ ✅ FINAL FIXED REGISTER (BUG SOLVED)
   const handleRegister = async (name, username, password) => {
     try {
       const res = await client.post("/api/users/register", {
@@ -29,15 +29,24 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (res.status === httpStatus.Created) {
-        return res.data.message; // Snackbar message
+        return {
+          success: true,
+          message: res.data.message,
+        };
       }
 
     } catch (err) {
-      throw err.response?.data || { message: "Registration failed" };
+      return {
+        success: false,
+        message:
+          err.response?.data?.message ||
+          err.message ||
+          "Registration failed",
+      };
     }
   };
 
-  // ⭐ LOGIN — FULLY FIXED
+  // ✅ ✅ FINAL FIXED LOGIN (SAFE)
   const handleLogin = async (username, password) => {
     try {
       const res = await client.post("/api/users/login", {
@@ -47,17 +56,25 @@ export const AuthProvider = ({ children }) => {
 
       if (res.status === httpStatus.Ok) {
         localStorage.setItem("token", res.data.token);
-
         navigate("/home");
-        return { success: true };
+
+        return {
+          success: true,
+        };
       }
 
     } catch (err) {
-      throw err.response?.data || { message: "Login failed" };
+      return {
+        success: false,
+        message:
+          err.response?.data?.message ||
+          err.message ||
+          "Login failed",
+      };
     }
   };
 
-  // ⭐ ADD TO HISTORY
+  // ADD TO HISTORY
   const addToUserHistory = async (meetingCode) => {
     if (!isLoggedIn()) return;
 
@@ -76,7 +93,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ⭐ GET USER HISTORY
+  // GET USER HISTORY
   const getHistoryOfUser = async () => {
     if (!isLoggedIn()) return [];
 
@@ -94,7 +111,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ⭐ DELETE HISTORY ITEM
+  // DELETE HISTORY ITEM
   const deleteHistoryItem = async (id) => {
     if (!isLoggedIn()) return { success: false };
 
@@ -111,7 +128,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ⭐ CONTEXT RETURN
   return (
     <AuthContext.Provider
       value={{

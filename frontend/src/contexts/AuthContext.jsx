@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
     return localStorage.getItem("token") !== null;
   };
 
-  // ✅ ✅ FINAL FIXED REGISTER (BUG SOLVED)
+  // ✅ ✅ FINAL FIXED REGISTER (BUG SOLVED: CREATED)
   const handleRegister = async (name, username, password) => {
     try {
       const res = await client.post("/api/users/register", {
@@ -28,7 +28,8 @@ export const AuthProvider = ({ children }) => {
         password,
       });
 
-      if (res.status === httpStatus.Created) {
+      // 🔥 BUG FIX HERE
+      if (res.status === httpStatus.CREATED) {
         return {
           success: true,
           message: res.data.message,
@@ -46,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ ✅ FINAL FIXED LOGIN (SAFE)
+  // ✅ ✅ FINAL FIXED LOGIN (BUG SOLVED: OK)
   const handleLogin = async (username, password) => {
     try {
       const res = await client.post("/api/users/login", {
@@ -54,7 +55,8 @@ export const AuthProvider = ({ children }) => {
         password,
       });
 
-      if (res.status === httpStatus.Ok) {
+      // 🔥 BUG FIX HERE
+      if (res.status === httpStatus.OK) {
         localStorage.setItem("token", res.data.token);
         navigate("/home");
 

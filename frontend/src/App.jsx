@@ -16,16 +16,21 @@ function AppWrapper() {
     const token = localStorage.getItem("token");
     const path = window.location.pathname;
 
+    // ✅ GUEST USER GUARD
     if (!token) {
-      if (path !== "/" && !path.startsWith("/m")) {
-        navigate("/");
-      }
-    } else {
-      if (path === "/" || path === "/auth") {
-        navigate("/home");
+      if (path === "/home" || path === "/history") {
+        navigate("/auth", { replace: true });
       }
     }
-  }, []);
+
+    // ✅ LOGGED-IN USER GUARD
+    if (token) {
+      if (path === "/" || path === "/auth") {
+        navigate("/home", { replace: true });
+      }
+    }
+
+  }, [navigate]);
 
   return (
     <Routes>
@@ -33,6 +38,8 @@ function AppWrapper() {
       <Route path="/auth" element={<Authentication />} />
       <Route path="/home" element={<HomeComponent />} />
       <Route path="/history" element={<History />} />
+
+      {/* ✅ Dynamic meeting route (REFRESH SAFE) */}
       <Route path="/:url" element={<VideoMeetComponent />} />
     </Routes>
   );
